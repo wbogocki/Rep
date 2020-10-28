@@ -13,7 +13,7 @@ typer = "^0.3.2"
 pytest = "^5.2"
 
 [tool.poetry.scripts]
-rep = 'rep:main'
+rep = 'rep.main:main'
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
