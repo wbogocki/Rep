@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+from tabulate import tabulate
 import tinydb
 import typer
 
@@ -18,14 +19,26 @@ def find_rep_dir(_current=Path(".").resolve()):
         return find_rep_dir(path.parent)
 
 
+def open_db():
+    rep_dir = find_rep_dir()
+    db_dir = rep_dir.joinpath("database.json")
+    db = tinydb.TinyDB(db_dir)
+    return db
+
+
 @app.command()
 def init():
     try:
         rep_dir = Path(".rep")
         rep_dir.mkdir()
         db_dir = rep_dir.joinpath("database.json")
-        db = tinydb.TinyDB(db_dir)
-        db.insert({"type": "metadata", "init_time": datetime.now().isoformat()})
+        with tinydb.TinyDB(db_dir) as db:
+            db.insert(
+                {
+                    "type": "metadata",
+                    "create_time": datetime.now().isoformat(),
+                }
+            )
     except FileExistsError:
         typer.echo("Database already exists!")
         raise typer.Abort()
@@ -33,20 +46,59 @@ def init():
 
 @app.command()
 def start(note: str = None):
-    dir = find_rep_dir()
-    print(f"stop {note}")
+    with open_db() as db:
+        # TODO: Sanity check
+        log = db.table("log")
+        log.insert(
+            {
+                "type": "start",
+                "time": datetime.now().isoformat(),
+                "note": note,
+            }
+        )
 
 
 @app.command()
 def stop(note: str = None):
-    dir = find_rep_dir()
-    print(f"stop {note}")
+    with open_db() as db:
+        # TODO: Sanity check
+        log = db.table("log")
+        log.insert(
+            {
+                "type": "stop",
+                "time": datetime.now().isoformat(),
+                "note": note,
+            }
+        )
 
 
 @app.command()
 def note(note: str):
-    dir = find_rep_dir()
-    print(f"note {note}")
+    with open_db() as db:
+        log = db.table("log")
+        log.insert(
+            {
+                "type": "note",
+                "time": datetime.now().isoformat(),
+                "note": note,
+            }
+        )
+
+
+@app.command()
+def printlog():
+    with open_db() as db:
+        log = db.table("log")
+        data = log.all()
+        if data:
+            headers = {
+                "type": "Type",
+                "time": "Time",
+                "note": "Note",
+            }
+            typer.echo(tabulate(data, headers=headers))
+        else:
+            typer.echo("Empty.")
 
 
 if __name__ == "__main__":
