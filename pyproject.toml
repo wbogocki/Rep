@@ -3,11 +3,13 @@ authors = ["Wojciech Bogócki <wojciechbogocki@fastmail.com>"]
 description = ""
 name = "Rep"
 version = "0.1.0"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
 tinydb = "^4.2.0"
 typer = "^0.3.2"
+tabulate = "^0.8.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
