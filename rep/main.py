@@ -81,7 +81,7 @@ def stop(note: str = None):
 
 
 @app.command()
-def note(note: str):
+def note(message: str):
     with open_db() as db:
         log = db.table("log")
         notes = db.table("notes")
@@ -94,7 +94,7 @@ def note(note: str):
                 {
                     "record_id": id,
                     "time": datetime.now().isoformat(),
-                    "note": note,
+                    "message": message,
                 }
             )
 
@@ -106,9 +106,9 @@ def dump():
         data = log.all()
         if data:
             headers = {
-                "type": "Type",
-                "time": "Time",
-                "note": "Note",
+                "Start": "start",
+                "End": "end",
+                "Billed": "billed",
             }
             typer.echo(tabulate(data, headers=headers, tablefmt="psql"))
         else:
@@ -121,8 +121,15 @@ def _print():
 
 
 @app.command()
+def invoice(rate: int = None):
+    pass
+
+
+@app.command()
 def bill():
     with open_db() as db:
+        # TODO: Confirmation dialog
+        # TODO: Print billed hours
         log = db.table("log")
         log.update({"billed": True})
 
