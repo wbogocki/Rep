@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from tabulate import tabulate
 import tinydb
@@ -121,8 +121,20 @@ def _print():
 
 
 @app.command()
-def invoice(rate: int = None):
-    pass
+def invoice(rate: float):
+    with open_db() as db:
+        log = db.table("log")
+        Log = tinydb.Query()
+        data = log.search(Log.billed == False)
+        time = timedelta()
+        for doc in data:
+            start = datetime.fromisoformat(doc["start"])
+            end = datetime.fromisoformat(doc["end"])
+            assert end >= start
+            time += end - start
+        hours = time.total_seconds() / 60.0 / 60.0
+        bill = hours * rate
+        typer.echo("Bill ${:.2f} for {:.2f}h".format(bill, hours))
 
 
 @app.command()
