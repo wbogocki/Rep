@@ -35,7 +35,7 @@ def init():
         with tinydb.TinyDB(db_dir) as db:
             db.insert(
                 {
-                    "type": "metadata",
+                    "type": "meta",
                     "create_time": datetime.now().isoformat(),
                 }
             )
@@ -47,46 +47,60 @@ def init():
 @app.command()
 def start(note: str = None):
     with open_db() as db:
-        # TODO: Sanity check
         log = db.table("log")
-        log.insert(
-            {
-                "type": "start",
-                "time": datetime.now().isoformat(),
-                "note": note,
-            }
-        )
+        data = log.all()
+        if data and not data[-1]["end"]:
+            typer.echo("You've already started!")
+            raise typer.Abort()
+        else:
+            log.insert(
+                {
+                    "start": datetime.now().isoformat(),
+                    "end": None,
+                    "billed": False,
+                }
+            )
 
 
 @app.command()
 def stop(note: str = None):
     with open_db() as db:
-        # TODO: Sanity check
         log = db.table("log")
-        log.insert(
-            {
-                "type": "stop",
-                "time": datetime.now().isoformat(),
-                "note": note,
-            }
-        )
+        data = log.all()
+        if data and data[-1]["end"]:
+            typer.echo("You've already stopped!")
+            raise typer.Abort()
+        else:
+            id = data[-1].doc_id
+            log.update(
+                {
+                    "end": datetime.now().isoformat(),
+                },
+                doc_ids=[id],
+            )
 
 
 @app.command()
 def note(note: str):
     with open_db() as db:
         log = db.table("log")
-        log.insert(
-            {
-                "type": "note",
-                "time": datetime.now().isoformat(),
-                "note": note,
-            }
-        )
+        notes = db.table("notes")
+        if not log:
+            typer.echo("No records to note on!")
+            raise typer.Abort()
+        else:
+            id = log.all()[-1].doc_id
+            notes.insert(
+                {
+                    "record_id": id,
+                    "time": datetime.now().isoformat(),
+                    "note": note,
+                }
+            )
 
 
 @app.command()
-def printlog():
+def dump():
     with open_db() as db:
         log = db.table("log")
         data = log.all()
@@ -96,9 +110,21 @@ def printlog():
                 "time": "Time",
                 "note": "Note",
             }
-            typer.echo(tabulate(data, headers=headers))
+            typer.echo(tabulate(data, headers=headers, tablefmt="psql"))
         else:
             typer.echo("Empty.")
+
+
+@app.command("print")
+def _print():
+    pass
+
+
+@app.command()
+def bill():
+    with open_db() as db:
+        log = db.table("log")
+        log.update({"billed": True})
 
 
 if __name__ == "__main__":

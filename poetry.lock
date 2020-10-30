@@ -153,14 +153,14 @@ doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=5.4.0,<6.0.0)", "markdown-
 name = "wcwidth"
 version = "0.2.5"
 description = "Measures the displayed width of unicode strings in a terminal"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "06ddb4900bbc3d1c79efc04b75e12cf892f484845d72615c4d3d63fa62e0b11b"
+content-hash = "422dce720be94ac0bde29cf98414d1296c92be498be88eb9f617499a31ff281f"
 
 [metadata.files]
 atomicwrites = [
