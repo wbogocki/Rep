@@ -58,6 +58,7 @@ def start(note: str = None):
                     "start": datetime.now().isoformat(),
                     "end": None,
                     "billed": False,
+                    "billed_on": None,
                 }
             )
 
@@ -109,6 +110,7 @@ def dump():
                 "Start": "start",
                 "End": "end",
                 "Billed": "billed",
+                "Billed on": "billed_on",
             }
             typer.echo(tabulate(data, headers=headers, tablefmt="psql"))
         else:
@@ -117,7 +119,21 @@ def dump():
 
 @app.command("print")
 def _print():
-    pass
+    with open_db() as db:
+        log = db.table("log")
+        notes = db.table("notes")
+        for entry in log:
+            id = entry.doc_id
+            start = entry["start"]
+            end = entry["end"]
+            billed = "*" if entry["billed"] else " "
+            typer.echo(f"({id}) {start} to {end} [{billed}]")
+
+            Note = tinydb.Query()
+            for note in notes.search(Note.record_id == id):
+                time = note["time"]
+                message = note["message"]
+                typer.echo(f"- {time} {message}")
 
 
 @app.command()
@@ -143,7 +159,12 @@ def bill():
         # TODO: Confirmation dialog
         # TODO: Print billed hours
         log = db.table("log")
-        log.update({"billed": True})
+        log.update(
+            {
+                "billed": True,
+                "billed_on": datetime.now().isoformat(),
+            }
+        )
 
 
 if __name__ == "__main__":
