@@ -1,32 +1,12 @@
-from database import DateTimeSerializer
+from database import open_db
 from datetime import datetime, timedelta
 from models import Config, Note, Log
 from pathlib import Path
 from tabulate import tabulate
-from tinydb import TinyDB, Query
-from tinydb_serialization import SerializationMiddleware
+from tinydb import where
 import typer
 
 app = typer.Typer()
-
-
-def find_rep_dir(_current=Path(".").resolve()):
-    path = _current
-    test = path.joinpath(".rep")
-    if test.exists() and test.is_dir():
-        return test
-    elif path == path.parent:
-        typer.echo("Database not found!")
-        raise typer.Abort()
-    else:
-        return find_rep_dir(path.parent)
-
-
-def open_db():
-    storage = SerializationMiddleware()
-    storage.register_serializer(DateTimeSerializer(), "datetime")
-    path = find_rep_dir() / "database.json"
-    return TinyDB(path, storage=storage)
 
 
 @app.command()
@@ -60,9 +40,11 @@ def start(note: str = None):
             if not last.end_tm:
                 typer.echo("Already started!")
                 raise typer.Abort()
-        else:
-            log = Log(start_tm=datetime.now(), notes=[], is_billed=False)
-            logs.insert(log.dict())
+
+        log = Log(start_tm=datetime.now(), notes=[], is_billed=False)
+        logs.insert(log.dict())
+
+    typer.echo("Started!")
 
 
 @app.command()
@@ -70,21 +52,23 @@ def stop(note: str = None):
     with open_db() as db:
         logs = db.table("logs")
 
-        # Check if we are started
+        # Check if we nver started
         if not logs:
             typer.echo("Never started!")
             raise typer.Abort()
-        else:
-            doc = logs.all()[-1]
-            log = Log.parse_obj(doc)
 
-            # Check if aren't already stopped
-            if log.end_tm:
-                typer.echo("Already stopped!")
-                raise typer.Abort()
-            else:
-                log.end_tm = datetime.now()
-                logs.update(log.dict(), doc_ids=[doc.doc_id])
+        doc = logs.all()[-1]
+        log = Log.parse_obj(doc)
+
+        # Check if aren't already stopped
+        if log.end_tm:
+            typer.echo("Already stopped!")
+            raise typer.Abort()
+
+        log.end_tm = datetime.now()
+        logs.update(log.dict(), doc_ids=[doc.doc_id])
+
+    typer.echo("Stopped!")
 
 
 @app.command()
@@ -99,6 +83,8 @@ def note(message: str):
             log = Log.parse_obj(doc)
             log.notes.append(Note(time=datetime.now(), message=message))
             logs.update(log.dict(), doc_ids=[doc.doc_id])
+    
+    typer.echo("Note added!")
 
 
 @app.command()
@@ -145,36 +131,45 @@ def _print():
 
 
 @app.command()
-def invoice(rate: float):
-    # with open_db() as db:
-    #     log = db.table("log")
-    #     Log = tinydb.Query()
-    #     data = log.search(Log.billed == False)
-    #     time = timedelta()
-    #     for doc in data:
-    #         start = datetime.fromisoformat(doc["start"])
-    #         end = datetime.fromisoformat(doc["end"])
-    #         assert end >= start
-    #         time += end - start
-    #     hours = time.total_seconds() / 60.0 / 60.0
-    #     bill = hours * rate
-    #     typer.echo("Bill ${:.2f} for {:.2f}h".format(bill, hours))
-    pass
+def invoice():
+    with open_db() as db:
+        logs = db.table("logs").search(where("is_billed") == False)
+
+        time_acc = timedelta()
+        for doc in logs:
+            log = Log.parse_obj(doc)
+
+            # Sanity check: must not be running
+            if not log.end_tm:
+                typer.echo("Warning: currently counting time!")
+                continue
+
+            # Sanity check: end must happen after starting
+            assert (
+                log.end_tm >= log.start_tm
+            ), f"Log {doc.doc_id}: end time is ahead of start time!"
+
+            time_acc += log.end_tm - log.start_tm
+
+        config = Config.parse_obj(db.table("config").get(doc_id=1))
+
+        bill_rate = config.bill_rate
+        hours = time_acc.total_seconds() / 60.0 / 60.0
+        bill = bill_rate * hours
+
+        typer.echo(f"Bill ${bill:.2f} for {hours:.2f}h at ${bill_rate}/h.")
 
 
 @app.command()
 def bill():
-    # with open_db() as db:
-    #     # TODO: Confirmation dialog
-    #     # TODO: Print billed hours
-    #     log = db.table("log")
-    #     log.update(
-    #         {
-    #             "billed": True,
-    #             "billed_on": datetime.now().isoformat(),
-    #         }
-    #     )
-    pass
+    with open_db() as db:
+        answer = typer.confirm("Are you sure you want to mark all logs as billed?")
+        if not answer:
+            raise typer.Abort()
+        logs = db.table("logs")
+        docs = logs.update({"is_billed": True}, where("is_billed") == False)
+
+    typer.echo(f"Billed {len(docs)} logs.")
 
 
 if __name__ == "__main__":
