@@ -83,7 +83,7 @@ def note(message: str):
             log = Log.parse_obj(doc)
             log.notes.append(Note(time=datetime.now(), message=message))
             logs.update(log.dict(), doc_ids=[doc.doc_id])
-    
+
     typer.echo("Note added!")
 
 
@@ -112,22 +112,30 @@ def dump():
 
 @app.command("print")
 def _print():
-    # with open_db() as db:
-    #     log = db.table("log")
-    #     notes = db.table("notes")
-    #     for entry in log:
-    #         id = entry.doc_id
-    #         start = entry["start"]
-    #         end = entry["end"]
-    #         billed = "*" if entry["billed"] else " "
-    #         typer.echo(f"({id}) {start} to {end} [{billed}]")
+    with open_db() as db:
+        logs = db.table("logs")
+        if logs:
+            for i, doc in enumerate(logs):
+                time_fmt = "%a, %b %-d %Y, %-I:%M %p"
+                log = Log.parse_obj(doc)
 
-    #         Note = tinydb.Query()
-    #         for note in notes.search(Note.record_id == id):
-    #             time = note["time"]
-    #             message = note["message"]
-    #             typer.echo(f"- {time} {message}")
-    pass
+                typer.echo(f"({doc.doc_id})")
+                typer.echo(f"Start:  {log.start_tm.strftime(time_fmt)}")
+                typer.echo(f"End:    {log.end_tm.strftime(time_fmt)}")
+                typer.echo(f"Notes:  {len(log.notes)}")
+                typer.echo(f"Billed: {'Yes' if log.is_billed else 'No'}")
+                typer.echo()
+
+                for note in log.notes:
+                    typer.echo(f"> {note.time.strftime(time_fmt)}")
+                    typer.echo(f"{note.message}")
+                    typer.echo()
+
+                if i + 1 != len(logs):
+                    typer.echo("------")
+                    typer.echo()
+        else:
+            typer.echo("Empty.")
 
 
 @app.command()
