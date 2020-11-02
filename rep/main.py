@@ -97,8 +97,8 @@ def note(message: str):
         else:
             doc = logs.all()[-1]
             log = Log.parse_obj(doc)
-            log.notes.append(Note(message=message, time=datetime.now()))
-            logs.update(log.dict(), doc_id=[doc.doc_id])
+            log.notes.append(Note(time=datetime.now(), message=message))
+            logs.update(log.dict(), doc_ids=[doc.doc_id])
 
 
 @app.command()
@@ -107,17 +107,18 @@ def dump():
         logs = db.table("logs").all()
         if logs:
 
-            def format(doc):
+            def table_row(doc):
                 time_fmt = "%a, %b %-d %Y, %-I:%M %p"
                 log = Log.parse_obj(doc)
                 return {
                     "ID": doc.doc_id,
                     "Start": log.start_tm.strftime(time_fmt),
                     "End": log.end_tm.strftime(time_fmt),
+                    "Notes": len(log.notes),
                     "Billed": "Yes" if log.is_billed else "No",
                 }
 
-            table = tabulate(map(format, logs), headers="keys", tablefmt="psql")
+            table = tabulate(map(table_row, logs), headers="keys", tablefmt="psql")
             typer.echo(table)
         else:
             typer.echo("Empty.")

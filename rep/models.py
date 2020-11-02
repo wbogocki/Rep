@@ -8,14 +8,12 @@ class Config(BaseModel):
 
 
 class Note(BaseModel):
-    message: str
     time: datetime
+    message: str
 
 
 class Log(BaseModel):
-    # fmt: off
-    start_tm:   datetime
-    end_tm:     Optional[datetime]
-    notes:      List[Note]
-    is_billed:  bool
-    # fmt: on
+    start_tm: datetime
+    end_tm: Optional[datetime]
+    notes: List[Note]
+    is_billed: bool
