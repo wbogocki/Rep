@@ -12,6 +12,7 @@ typer = "^0.3.2"
 tabulate = "^0.8.7" 
 wcwidth = "^0.2.5" # CJK support in tabulate
 pydantic = "^1.7.1"
+tinydb-serialization = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

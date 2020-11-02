@@ -1,31 +1,13 @@
-from .models import LogEntry, Note
+from datetime import datetime
 from tinydb import TinyDB
-
-# Log Entries
-
-
-def create_log_entry(db: TinyDB, entry: LogEntry):
-    pass
+from tinydb_serialization import Serializer
 
 
-def read_log_entry(db: TinyDB, id: int):
-    pass
+class DateTimeSerializer(Serializer):
+    OBJ_CLASS = datetime
 
+    def encode(self, obj: datetime):
+        return obj.isoformat()
 
-def write_log_entry(db: TinyDB, id: int, entry: LogEntry):
-    pass
-
-
-# Notes
-
-
-def create_note(db: TinyDB, note: Note):
-    pass
-
-
-def read_note(db: TinyDB, id: int):
-    pass
-
-
-def write_note(db: TinyDB, id: int, note: Note):
-    pass
+    def decode(self, s: str) -> datetime:
+        return datetime.fromisoformat(s)

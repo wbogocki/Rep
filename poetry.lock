@@ -146,6 +146,17 @@ optional = false
 python-versions = ">=3.5,<4.0"
 
 [[package]]
+name = "tinydb-serialization"
+version = "2.0.0"
+description = "Serialization for objects that TinyDB otherwise couldn't handle"
+category = "main"
+optional = false
+python-versions = ">=3.5,<4.0"
+
+[package.dependencies]
+tinydb = ">=4.0,<5.0"
+
+[[package]]
 name = "typer"
 version = "0.3.2"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
@@ -173,7 +184,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8" 
-content-hash = "a58a314427846d28ec8e6f5bba912163ec1d568230b70be3ead89b2f032b2442"
+content-hash = "986201c856c644c2853528adc7be8c240680cf14337f38c5b866a4dd7fd93050"
 
 [metadata.files]
 atomicwrites = [
@@ -251,6 +262,10 @@ tabulate = [
 tinydb = [
     {file = "tinydb-4.2.0-py3-none-any.whl", hash = "sha256:8cfc0bdf7b284e4fa6ae6931dbf9591831368042e706f8d1688ae0307fdc11a3"},
     {file = "tinydb-4.2.0.tar.gz", hash = "sha256:b58964df6f7337bdeb6c8f4938da2876b98fdbd4e1468ddb2ea5fb4b9316ad65"},
+]
+tinydb-serialization = [
+    {file = "tinydb-serialization-2.0.0.tar.gz", hash = "sha256:02d5ebc54652a38c52976658c1d25732112afb5ebbc4c0b730b3abef4b121b59"},
+    {file = "tinydb_serialization-2.0.0-py3-none-any.whl", hash = "sha256:d1bed979e1566452b51ea065942e1208ea751285064ebb56bbab52e2ffbf3100"},
 ]
 typer = [
     {file = "typer-0.3.2-py3-none-any.whl", hash = "sha256:ba58b920ce851b12a2d790143009fa00ac1d05b3ff3257061ff69dbdfc3d161b"},
