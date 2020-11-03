@@ -37,7 +37,7 @@ There are six commands you need to know to use Rep:
 | `rep note`    | Add a note to the last log.                    |
 | `rep table`   | Print logs in a table (doesn't show notes).    |
 | `rep print`   | Print logs and notes.                          |
-| `rep invoice` | Calculate invoice for unbilled logs.           |
+| `rep invoice` | Print the invoice amount for unbilled logs.    |
 | `rep bill`    | Mark logs as billed.                           |
 
 ## License

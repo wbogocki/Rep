@@ -138,7 +138,7 @@ def _print():
             typer.echo("Empty.")
 
 
-@app.command(help="Calculate invoice for unbilled logs.")
+@app.command(help="Print the invoice amount for unbilled logs.")
 def invoice():
     with open_db() as db:
         logs = db.table("logs").search(where("is_billed") == False)
