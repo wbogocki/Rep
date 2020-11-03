@@ -1,7 +1,7 @@
-# Rep
+![Logo](logo.svg)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](LICENSE.txt)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Rep is a tiny tool for freelancers and contractors to track time and calculate invoices. I wrote it to simplify my process and will continue to refine it along the way.
 
@@ -13,7 +13,7 @@ At the moment, Rep can:
 
 ## Approach
 
-Rep uses logs to track your time and group notes. It's a very simple approach that I used to use with pen and paper.
+Rep uses logs to track time and group notes. It's a very simple approach that I used to use with pen and paper.
 
 For example, this is a single log:
 
@@ -23,7 +23,7 @@ Nov 4 2020 18:00 - Note: Let's go, wohoooooo!
 Nov 5 2020 00:30 - Stop work
 ```
 
-Rep stores these logs inside a hidden `.rep` directory in your project folder. The database is a human-friendly JSON file that can be edited when needed.
+Rep stores these logs inside a hidden `.rep` directory in your project folder. The database is a human-friendly JSON file that can be manually edited when needed.
 
 ## Usage
 
