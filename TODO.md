@@ -12,5 +12,5 @@
 - [x] Add models and cleanup a bit
 - [ ] Readme
 - [ ] Publish to PyPI
-  - [ ] Select a license
+  - [x] Select a license
   - [ ] Publish
