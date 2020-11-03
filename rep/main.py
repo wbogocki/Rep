@@ -1,6 +1,6 @@
-from database import open_db
+from .database import open_db
+from .models import Config, Note, Log
 from datetime import datetime, timedelta
-from models import Config, Note, Log
 from pathlib import Path
 from tabulate import tabulate
 from tinydb import where
@@ -9,7 +9,7 @@ import typer
 app = typer.Typer()
 
 
-@app.command()
+@app.command(help="Initialize Rep in the current directory.")
 def init():
     try:
         # Prompt for config
@@ -25,11 +25,11 @@ def init():
             db.table("config").insert(config.dict())
 
     except FileExistsError:
-        typer.echo("Database already exists!")
+        typer.echo("Database already exists.")
         raise typer.Abort()
 
 
-@app.command()
+@app.command(help="Open a new log and start measuring time.")
 def start(note: str = None):
     with open_db() as db:
         logs = db.table("logs")
@@ -38,23 +38,23 @@ def start(note: str = None):
         if logs:
             last = Log.parse_obj(logs.all()[-1])
             if not last.end_tm:
-                typer.echo("Already started!")
+                typer.echo("Already started.")
                 raise typer.Abort()
 
         log = Log(start_tm=datetime.now(), notes=[], is_billed=False)
         logs.insert(log.dict())
 
-    typer.echo("Started!")
+    typer.echo("Started.")
 
 
-@app.command()
+@app.command(help="Close the current log and stop measuring time.")
 def stop(note: str = None):
     with open_db() as db:
         logs = db.table("logs")
 
         # Check if we nver started
         if not logs:
-            typer.echo("Never started!")
+            typer.echo("Never started.")
             raise typer.Abort()
 
         doc = logs.all()[-1]
@@ -62,21 +62,21 @@ def stop(note: str = None):
 
         # Check if aren't already stopped
         if log.end_tm:
-            typer.echo("Already stopped!")
+            typer.echo("Already stopped.")
             raise typer.Abort()
 
         log.end_tm = datetime.now()
         logs.update(log.dict(), doc_ids=[doc.doc_id])
 
-    typer.echo("Stopped!")
+    typer.echo("Stopped.")
 
 
-@app.command()
+@app.command(help="Add a note to the last log.")
 def note(message: str):
     with open_db() as db:
         logs = db.table("logs")
         if not logs:
-            typer.echo("No records to note on!")
+            typer.echo("No records to note on.")
             raise typer.Abort()
         else:
             doc = logs.all()[-1]
@@ -84,11 +84,11 @@ def note(message: str):
             log.notes.append(Note(time=datetime.now(), message=message))
             logs.update(log.dict(), doc_ids=[doc.doc_id])
 
-    typer.echo("Note added!")
+    typer.echo("Note added.")
 
 
-@app.command()
-def dump():
+@app.command(help="Print logs in a table.")
+def table():
     with open_db() as db:
         logs = db.table("logs").all()
         if logs:
@@ -110,7 +110,7 @@ def dump():
             typer.echo("Empty.")
 
 
-@app.command("print")
+@app.command("print", help="Print logs and notes.")
 def _print():
     with open_db() as db:
         logs = db.table("logs")
@@ -138,7 +138,7 @@ def _print():
             typer.echo("Empty.")
 
 
-@app.command()
+@app.command(help="Calculate invoice for unbilled logs.")
 def invoice():
     with open_db() as db:
         logs = db.table("logs").search(where("is_billed") == False)
@@ -155,7 +155,7 @@ def invoice():
             # Sanity check: end must happen after starting
             assert (
                 log.end_tm >= log.start_tm
-            ), f"Log {doc.doc_id}: end time is ahead of start time!"
+            ), f"Log {doc.doc_id}: end time is ahead of start time."
 
             time_acc += log.end_tm - log.start_tm
 
@@ -168,7 +168,7 @@ def invoice():
         typer.echo(f"Bill ${bill:.2f} for {hours:.2f}h at ${bill_rate}/h.")
 
 
-@app.command()
+@app.command(help="Mark logs as billed.")
 def bill():
     with open_db() as db:
         answer = typer.confirm("Are you sure you want to mark all logs as billed?")

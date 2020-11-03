@@ -10,7 +10,8 @@
 # Org
 
 - [x] Add models and cleanup a bit
-- [ ] Readme
+- [x] Readme
 - [ ] Publish to PyPI
   - [x] Select a license
   - [ ] Publish
+- [ ] Tests

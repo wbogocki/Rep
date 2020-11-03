@@ -1,24 +1,25 @@
 [tool.poetry]
 authors = ["Wojciech Bogócki <wojciechbogocki@fastmail.com>"]
-description = ""
+description = "A tiny tool for freelancers and contractors for tracking time and calculating invoices."
 name = "Rep"
 version = "0.1.0"
 license = "MIT"
 
 [tool.poetry.dependencies]
+pydantic = "^1.7.1" 
 python = "^3.8" 
-tinydb = "^4.2.0" 
-typer = "^0.3.2" 
+shellingham = "^1.3.2" # auto-detect current shell when installing completions
 tabulate = "^0.8.7" 
+tinydb = "^4.2.0" 
+tinydb-serialization = "^2.0.0" 
+typer = "^0.3.2" 
 wcwidth = "^0.2.5" # CJK support in tabulate
-pydantic = "^1.7.1"
-tinydb-serialization = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 
 [tool.poetry.scripts]
-rep = 'rep.main:main'
+rep = "rep.main:app"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

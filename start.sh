@@ -1,2 +1,2 @@
 #!/bin/sh
-poetry run python ./rep/main.py "$@"
+poetry run python -m rep.main "$@"
