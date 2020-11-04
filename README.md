@@ -1,7 +1,8 @@
 ![Logo](logo.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](LICENSE.txt)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blueviolet.svg)](LICENSE.txt)
 
 Rep is a tiny tool for freelancers and contractors to track time and calculate invoices. I wrote it to simplify my process and will continue to refine it along the way.
 
