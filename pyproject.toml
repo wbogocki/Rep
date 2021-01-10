@@ -1,9 +1,9 @@
 [tool.poetry]
 authors = ["Wojciech Bogócki <wojciechbogocki@fastmail.com>"]
 description = "A tiny tool for freelancers and contractors for tracking time and calculating invoices."
-name = "Rep"
-version = "0.1.0"
 license = "MIT"
+name = "rep_cli"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
 pydantic = "^1.7.1" 
@@ -19,7 +19,7 @@ wcwidth = "^0.2.5" # CJK support in tabulate
 pytest = "^5.2"
 
 [tool.poetry.scripts]
-rep = "rep.main:app"
+rep = "rep_cli.main:app"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
