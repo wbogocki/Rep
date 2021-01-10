@@ -3,7 +3,8 @@ authors = ["Wojciech Bogócki <wojciechbogocki@fastmail.com>"]
 description = "A tiny tool for freelancers and contractors for tracking time and calculating invoices."
 license = "MIT"
 name = "rep_cli"
-version = "0.1.0"
+readme = "README.md"
+version = "0.1.2"
 
 [tool.poetry.dependencies]
 pydantic = "^1.7.1" 

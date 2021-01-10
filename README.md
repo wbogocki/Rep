@@ -1,4 +1,4 @@
-![Logo](logo.svg)
+![Logo](https://raw.githubusercontent.com/wbogocki/Rep/master/logo.svg)
 
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -8,9 +8,9 @@ Rep is a tiny tool for freelancers and contractors to track time and calculate i
 
 At the moment, Rep can:
 
-- Track time
-- Take notes
-- Calculate invoices
+-   Track time
+-   Take notes
+-   Calculate invoices
 
 ## Approach
 
